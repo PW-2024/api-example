@@ -1,44 +1,98 @@
-# Conexão de MySQL à API
+# ORM (Object-relational mapping)
 
 Nesta aula os principais tópicos abordados foram:
-    1. Instalação de um servidor de SQL localmente
-    2. Conexão do servidor na API em NodeJS
-    4. Guardar dados na base de dados com NodeJS
-    3. Compreensão do modelo MVC
-    3. Criação de endpoits CRUD de utilizador e artigos
+    1. ORM
+    2. Integração do Sequelize
+    3. Queries no Sequelize
+    4. Relações no Sequelize
+    5. CRUD
+    6. Alternativas de ORM's em NodeJS
 
-## Software
+## Integração de Sequelize
 
-Durante os exemplos da aula foram utilizados os seguintes softwares:
+Sequelize é uma libraria ORM que trata de "converter" as funcionalidades de SQL para objetos de javascript com métodos (funções) que nos permitem executar as várias queries sem termos de escrever qualquer linha de SQL.
 
-    - [MySQL Server](https://dev.mysql.com/downloads/mysql/). Servidor de MySQL que vai ser instalado localmente. O método de autenticação na instalação deve ser definido como o legacy (password).
-    - [MySQL Workbench](https://dev.mysql.com/downloads/workbench/): Interface para manipulação da base de dados.
+Conceitos chave:
 
-## Conexão da BD no NodeJS
+Models(properties) -> User (firstName, lastName) = CREATE Table Users (firstName VARCHAR(55), ....)
+Queries -> User.findAll() = SELECT * FROM Users;
+Associations (Relações) -> User.hasMany(Articles)
 
-De modo a poder conectar a uma base de dados através do NodeJS e realizar queries, é necessário utilizar um driver que nos permita enviar as queries para a base de dados.
-O [mysql2](https://github.com/sidorares/node-mysql2) torna isto possível de forma eficiente.
+### Instalção
 
-### Instalação
+```bash
+    npm i sequelize
+```
 
-``
-npm install mysql2
-``
+### Criação de um *Model* (Representação de uma tabela)
 
-### MVC
+Mais info:
 
-[MVC Concept](https://www.freecodecamp.org/news/the-model-view-controller-pattern-mvc-architecture-and-frameworks-explained/)
+- [Models](https://sequelize.org/docs/v6/core-concepts/model-basics/)
 
-## Desafio indivídual
+```js
+  const User = sequelize.define("User", {
+    firstName: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    lastName: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING(155),
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+      },
+    },
+    summary: DataTypes.TEXT,
+  });
 
-    - Criação de um schema com 3 tabelas
-    - Realizar CRUD de dois dos recursos
+```
 
-## Desafio do sprint 2
+### Representação de relações - *Associations*
 
-Com base no Schema definido no sprint 1 (Schema de base de dados):
+Mais info: [Relações](https://sequelize.org/docs/v6/core-concepts/assocs/)
 
-    - Criar o repositório do grupo no gitlab/github.  
-    - Exportar/Importar o Schema da BD numa base de dados local.
-    - Definir um conjunto de recursos (mínimo 2 controladores com CRUD) na API de modo a serem integrados na aplicação.
-    - Criar os principais recursos numa pasta de grupo no postman.
+#### One-to-One
+
+```js
+    Foo.hasOne(Bar);
+    Bar.belongsTo(Foo);
+```
+
+#### One-to-Many
+
+```js
+    Team.hasMany(Player);
+    Player.belongsTo(Team);
+```
+
+#### Many-to-Many
+
+```js
+    Article.belongsToMany(Category, { through: 'ArticleCategories' });
+    Category.belongsToMany(Article, { through: 'ArticleCategories' });
+```
+
+### Queries em sequelize
+
+Mais info:
+
+- [Queries](https://sequelize.org/docs/v6/core-concepts/model-querying-basics/)
+- [Finders](https://sequelize.org/docs/v6/core-concepts/model-querying-finders/)
+
+#### Find (exemplo)
+
+```sql
+    SELECT * FROM Users;
+```
+
+```js
+    Users.findAll({
+        attributes: ['firstName', 'lastNName']
+    });
+```

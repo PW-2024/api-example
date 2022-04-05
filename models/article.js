@@ -1,17 +1,22 @@
-function findAll() {}
+const getArticleModel = (sequelize, { DataTypes }) => {
+  const ArticleModel = sequelize.define("Article", {
+    title: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    summary: DataTypes.STRING,
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+  });
 
-function findById(id) {}
+  ArticleModel.associate = ({ UserModel, CategoryModel }) => {
+    ArticleModel.belongsTo(UserModel);
+    ArticleModel.belongsToMany(CategoryModel, { through: "ArticleCategories" });
+  };
 
-function create(title, content, summary, user) {}
-
-function update(id, title, content, summary, user) {}
-
-function remove() {}
-
-module.exports = {
-  findAll,
-  findById,
-  create,
-  update,
-  remove,
+  return ArticleModel;
 };
+
+module.exports = getArticleModel;
