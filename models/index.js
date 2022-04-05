@@ -14,17 +14,20 @@ const sequelize = new Sequelize(
   }
 );
 
-const models = {
+const db = {
   RoleModel: getRoleModel(sequelize, Sequelize),
   UserModel: getUserModel(sequelize, Sequelize),
   ArticleModel: getArticleModel(sequelize, Sequelize),
   CategoryModel: getCategoryModel(sequelize, Sequelize),
 };
 
-Object.keys(models).forEach((key) => {
-  if (models[key]["associate"]) {
-    models[key].associate(models);
+Object.keys(db).forEach((key) => {
+  if (db[key]["associate"]) {
+    db[key].associate(db);
   }
 });
 
-module.exports = { ...models, sequelize };
+db.sequelize = sequelize;
+db.Sequelize = sequelize;
+
+module.exports = db;
