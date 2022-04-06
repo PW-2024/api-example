@@ -1,12 +1,12 @@
 # ORM (Object-relational mapping)
 
 Nesta aula os principais tópicos abordados foram:
-    1. ORM
-    2. Integração do Sequelize
-    3. Queries no Sequelize
-    4. Relações no Sequelize
-    5. CRUD
-    6. Alternativas de ORM's em NodeJS
+1. ORM
+2. Integração do Sequelize
+3. Queries no Sequelize
+4. Relações no Sequelize
+5. CRUD
+6. Alternativas de ORM's em NodeJS
 
 ## Integração de Sequelize
 
