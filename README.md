@@ -283,11 +283,12 @@ async function getById(req, res) {
 }
 ```
 
-
 ## Links úteis
 
 - [Bons princípios](https://hackernoon.com/restful-api-designing-guidelines-the-best-practices-60e1d954e7c9)
 - [Filtering, Sorting, and Pagination](https://www.moesif.com/blog/technical/api-design/REST-API-Design-Filtering-Sorting-and-Pagination/)
+- [qs](https://github.com/ljharb/qs)
+- [Mongoose Query](https://github.com/akashshyamdev/mongoose-query-methods-cheatsheet)
 - [Express validator](https://express-validator.github.io/docs/)
 - [Validators](https://github.com/validatorjs/validator.js)
 - [Express error handling](https://expressjs.com/en/guide/error-handling.html)
