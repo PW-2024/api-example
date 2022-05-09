@@ -1,5 +1,6 @@
 const express = require("express");
 require("dotenv").config();
+const { error } = require("./utils/apiResponse");
 const { sequelize, RoleModel, UserModel } = require("./models");
 
 const Routes = require("./routes");
@@ -16,6 +17,13 @@ app.use("/articles", Routes.ArticleRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res
+    .status(err.statusCode || 500)
+    .send(error(err.message, err.statusCode || 500, err.errors));
 });
 
 const eraseDatabaseOnSync = true;

@@ -1,4 +1,9 @@
+const { validationResult } = require("express-validator");
+
 const { ArticleModel, UserModel } = require("../models");
+const { success } = require("../utils/apiResponse");
+const { NotFoundError, ValidationError } = require("../utils/errors");
+const { Op } = require("sequelize");
 
 async function getById(req, res) {
   const { id } = req.params;
@@ -6,6 +11,7 @@ async function getById(req, res) {
   const articleData = await ArticleModel.findByPk(id, {
     include: [UserModel],
   });
+
   if (articleData) {
     res.json(articleData);
   } else {
@@ -16,26 +22,48 @@ async function getById(req, res) {
 }
 
 async function getAll(req, res) {
-  const articles = await ArticleModel.findAll({
+  console.log(req.query);
+
+  const {
+    q,
+    sort_by = "title",
+    order_by = "asc",
+    page = 0,
+    limit = 10,
+  } = req.query;
+
+  const offset = +page * +limit;
+
+  // page = 0, limit = 10 = 0
+  // page = 1, limit = 10 = 10
+  // page = 2, limit = 10 = 20
+
+  const { count, rows } = await ArticleModel.findAndCountAll({
     include: [UserModel],
+    order: [[sort_by, order_by]],
+    offset,
+    limit: limit,
+    where: {
+      title: {
+        [Op.like]: `%${q}%`,
+      },
+    },
   });
-  res.json(articles);
+
+  res.json(success(rows, { total: count }));
 }
 
 async function create(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw ValidationError(errors.errors);
+  }
+
   const { title, summary, content } = req.body;
 
-  const [article, created] = await ArticleModel.findOrCreate({
-    where: { title, summary, content },
-  });
+  const article = await ArticleModel.create({ title, summary, content });
 
-  if (created) {
-    res.json(article);
-  } else {
-    res.status(409).json({
-      message: "Article already exists",
-    });
-  }
+  res.json(success(article));
 }
 
 async function update(req, res) {
@@ -59,9 +87,7 @@ async function destroy(req, res) {
   const articleData = await ArticleModel.findByPk(id);
 
   if (!articleData) {
-    return res.status(404).send({
-      error: "Article not found",
-    });
+    throw NotFoundError("Article not found");
   }
 
   await User.destroy({
@@ -69,6 +95,7 @@ async function destroy(req, res) {
       id,
     },
   });
+
   return res.send(articleData);
 }
 
